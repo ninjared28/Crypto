@@ -2,9 +2,9 @@
 # GENERAL SETTINGS
 #
 # DCA is a method for averaging down the price of a losing trade, hoping the price will come up to your lower average buy price.
-DEFAULT_DCA_max_cost = 10
+DEFAULT_DCA_max_cost = 1800
 # Define max amount of times DCA is allowed to buy a pair.
-DEFAULT_DCA_max_buy_times = 11
+DEFAULT_DCA_max_buy_times = 10
 #
 # Set the maximum number of coins that are permitted to DCA at any given time.
 # If not set (including missing from the file completely) then there is no limit and all coins can be DCA'd.
@@ -20,7 +20,7 @@ DCA_keep_balance_percentage = 0
 #
 # Set this value to true to allow DCA to continue buying even if no new buys are allowed as the bot is in Sell Only Mode.
 # Allow DCA to buy if there's enough volume in order book to fill the order.
-DEFAULT_DCA_min_buy_volume = 300
+DEFAULT_DCA_min_buy_volume = 100
 # Max spread % between lowest ask and highest bid to allow a new buy order.
 DEFAULT_DCA_max_buy_spread = 3
 DEFAULT_DCA_min_orderbook_volume_percentage = 100
@@ -36,62 +36,71 @@ DEFAULT_DCA_sell_wall_orderbook_depth = 100
 # Set the maximum difference allowed from the average order size within the DEFAULT_DCA_sell_wall_orderbook_depth.
 # If this difference is exceeded then the coin will not be bought.
 DEFAULT_DCA_sell_wall_diff_percentage = 5000
-#
+# On the buy side It only purchases trading pairs if the 24 hour percentage change is positive.
 #
 # BUY SETTINGS
 #
-# Set the percentage of TCV purchased when making a DCA buy.
+# your trades position size and attempt to reduce average price to bring the pair back into profit.
 # *********************************************************************
-#        MONTE CARLO - BUY STRATEGY - ProfitTrailer 2.1.x
+#        BASE SETTINGS - BUY STRATEGY - ProfitTrailer 2.1.x
 #
-# This strategy is described here:
+# This strategy provides a bare bones set of settings from which you can start to explore the
+# world of automated trading with ProfitTrailer. These settings have all the standard protection
+# mechanisms built into them and all the basic settings you will need to get started.
 #
+# It uses a lower initial purchase price of approx. $20 with a large maximum trading pairs value to
+# load up the queue of potential trading pairs to be scalped.
 #
+# This is a scalping strategy that aims to be in and out of trades as quickly as possible (depending
+# upon prevailing market conditions at the time) taking small profits along the way.
+#
+# It looks for pairs that are in their LOWBB range and with low RSI indicating they are overbought.
+#
+# If a trade starts to fail it tries to recover it using both DCA and Pending Orders features to increase
+#
+# If a trading pair starts to fail it tries to recover it quickly with DCA to 5 levels so maximum exposure
+# per trading pair is approx. $120 in normal circumstances. When a trade starts to fail your exposure may
+# be greater as it uses dollar cost averaging to try and recover the pair and Pending Orders which will
+# increase position sizes when combined with new purchases of the same trading pair.
+#
+# The DCA trigger is set at -1 and uses LOSS to do the buys to ensure we are actually recducing the combined
+# average cost of the trading pair. The LOSS is combined with a 10 minute rebuy timeout to ensure we are
+# buying at the lowest possible price. The use of LOSS also prevents us purchasing more of a trading pair
+# if the trading pair starts to rise in value again as doing so (positive DCA) would put us back into a
+# loss situation which the trading pair may not recover from.
+#
+# Pending Orders are created if the trading pair continues to fail and goes below -5%.
+#
+# This is a beginner level strategy that will work in all market conditions.
+#
+#                       READY, SET, GO
 # *********************************************************************
 #
-# Do we have a Bear Cross?
+# Is there a drop in price we can take advantage of?
 #
-DEFAULT_DCA_A_buy_strategy = EMACROSS
-DEFAULT_DCA_A_buy_value = -0.01
-DEFAULT_DCA_A_buy_value_limit = -20
+DEFAULT_DCA_A_buy_strategy = LOWBB
+DEFAULT_DCA_A_buy_value = 0
+DEFAULT_DCA_A_buy_value_limit = -20.0
+# mechanisms built into them and all the basic settings you will need to get started.
+# Set the loss percentage required before a DCA buy can take place.
+DEFAULT_DCA_buy_trigger = -1
+# Set the loss % required before a DCA buy can take place when SOM is on.
+# All configured buy strategies must be true and you must have lost at least this amount from your average bought price.
+SOM_DCA_buy_trigger = -1
+# upon prevailing market conditions at the time) taking small profits along the way.
 #
-# Are we oversold right now?
+# Trailing is turned on to take us down to the bottom of the trade cycle
 #
-DEFAULT_DCA_B_buy_strategy = STOCH
-DEFAULT_DCA_B_buy_value = 30
-DEFAULT_DCA_B_buy_value_limit = -30
-# Trailing should take us the rest of the way to the bottom of the Trade Cycle
-#
+# Once all buy strategies are true, the bot will make note of the current ask price and begin watching.
+# The price needs to fall and then rise by at least the percentage specified in order for a buy to be attempted.
 DEFAULT_DCA_trailing_buy = 0.01
 # Set the number of times you want to see the price fluctuate into and out of a good trail before making the buy.
 DEFAULT_DCA_trailing_buy_rebound_count = 0
+# Set the percentage of TCV purchased when making a DCA buy.
 DEFAULT_DCA_buy_percentage = 100
 # Set the buy percentage to be used instead of DEFAULT_DCA_buy_percentage when sell only mode (SOM) is on
 SOM_DCA_buy_percentage = 100
 #
-#
-# Tesla DCA strategy
-#
-# Implements a Tesla sequence strategy for doing DCA buys
-#
-# Nikola Tesla the worlds greatest inventor who is known as the father of modern electricity
-# studied patterns in nature and found a pattern similar to the fibonacci sequence which he applied
-# to the creation of his electrical coils known today as Tesla Coils. Natures patterns are often
-# applied to the financial markets by day traders as markets are driven by the emotions of millions
-# of people.
-#
-# https://en.wikipedia.org/wiki/Nikola_Tesla
-#
-DEFAULT_DCA_buy_trigger_1 = -1
-DEFAULT_DCA_buy_trigger_2 = -2
-DEFAULT_DCA_buy_trigger_3 = -4
-DEFAULT_DCA_buy_trigger_4 = -5
-DEFAULT_DCA_buy_trigger_5 = -7
-DEFAULT_DCA_buy_trigger_6 = -8
-DEFAULT_DCA_buy_trigger_7 = -3
-DEFAULT_DCA_buy_trigger_8 = -6
-DEFAULT_DCA_buy_trigger_9 = -9
-DEFAULT_DCA_buy_trigger_10 = -12
 # Sets the per trigger level percentage of TCV to purchase when making a DCA buy.
 # Purchase the same number of coins at each DCA level effectively doubling down.
 DEFAULT_DCA_buy_percentage_1 = 100
@@ -200,20 +209,53 @@ DEFAULT_DCA_buy_percentage_100 = 1
 #
 
 # *********************************************************************
-#        MONTE CARLO - SELL STRATEGY - ProfitTrailer 2.1.x
+#        BASE SETTINGS - SELL STRATEGY - ProfitTrailer 2.1.x
 #
-# This strategy is described here:
+# This strategy provides a bare bones set of settings from which you can start to explore the
+# world of automated trading with ProfitTrailer. These settings have all the standard protection
 #
+# It uses a lower initial purchase price of approx. $20 with a large maximum trading pairs value to
+# load up the queue of potential trading pairs to be scalped.
 #
+# This is a scalping strategy that aims to be in and out of trades as quickly as possible (depending
+#
+# On the buy side It only purchases trading pairs if the 24 hour percentage change is positive.
+# It looks for pairs that are in their LOWBB range and with low RSI indicating they are overbought.
+#
+# On the sell side it uses a small GAIN percentage and a MACD cross reversal (from positive to negative)
+# to determine when to sell.
+#
+# It monitors the Pending Orders to see if the pairs can be combined (at 0.25% combined profit) with new
+# purchases of the same trading pair.
+#
+# The strategy also makes use of Take Profit features at 1.25% profit on a 10 minute timeout with 0.25%
+# movement as the trigger.
+# Trailing is turned off as we want the MACD cross to control the sale. We use GAIN to force the trading
+# pair through the trade cycle again if the MACD cross happens before the GAIN is reached. If we didn't
+# catch it this time we may the next time and failing that the DCA or Pending Orders will catch it.
+#
+# This is a beginner level strategy that will work in all market conditions.
+#
+#                       READY, SET, GO
 # *********************************************************************
 #
 # What is the minimum profit we want to make on this trade?
 #
 DEFAULT_DCA_A_sell_strategy = GAIN
-DEFAULT_DCA_A_sell_value = 1.25
-# Trailing should take us to the peak of the trade cycle
+DEFAULT_DCA_A_sell_value = 0.75
 #
-DEFAULT_DCA_trailing_profit = 0.25
+# Are we overbought or close to being overbought right now?
+#
+DEFAULT_DCA_B_sell_strategy = HIGHBB
+DEFAULT_DCA_B_sell_value = -5
+DEFAULT_DCA_B_sell_value_limit = -1
+#
+# Trailing is turned off as we want the MACD cross to control the sale
+# We use GAIN to force the trading pair through its cycle if the MACD cross
+# happens before the GAIN is reached.
+#
+DEFAULT_DCA_trailing_profit_type = DEFAULT
+DEFAULT_DCA_trailing_profit = 0.2
 DEFAULT_DCA_trailing_profit_rebound_count = 0
 #
 # Profits
@@ -221,29 +263,23 @@ DEFAULT_DCA_trailing_profit_rebound_count = 0
 # If set to true, Profit Trailer will look at the highest bid order with enough volume rather than just the highest bid order.
 DCA_orderbook_profit_calculation = true
 # Sell the trading pair if profit reaches the set percentage regardless of all sell strategies being true.
-DEFAULT_DCA_max_profit = 20
+DEFAULT_DCA_max_profit = 0
 # The profit percentage above which the bot will attempt to sell a pair if it has not sold for xx minutes, defined on the line above this.
-DEFAULT_DCA_take_profit_percentage = 10
+DEFAULT_DCA_take_profit_percentage = 1.25
 # The percentage of price deviation allowed from the DEFAULT_take_profit_percentage before resetting the DEFAULT_take_profit_wait_time.
 DEFAULT_DCA_take_profit_reset_percentage_move = 0.25
 # The time period to wait define in minutes while the profit percentage remains above xx percent, defined on the line below this, but has not yet sold.
-DEFAULT_DCA_take_profit_wait_time = 10
-# If the profit goes above this we flag the coin as armed. Then if the profit comes back down below the fire value the bot will attempt to sell the coins.
-DEFAULT_DCA_take_profit_safety_arm = 0.8
-# Set the value which will trigger the Take Profit Safety sell method. Requires DEFAULT_take_profit_safety_arm to be armed.
-DEFAULT_DCA_take_profit_safety_fire = 0.5
+DEFAULT_DCA_take_profit_wait_time = 30
 #
 # Pending Orders
 #
 # If x amount of time in minutes has passed since you bought a coin, create a pending order for that pair
 DEFAULT_DCA_pending_order_wait_time = 0
 # Cancel pending order for specified coin if avg profit reaches specified amount
-DEFAULT_DCA_combined_cancel_pending_trigger = 0.25
-# Cancel pending orders for a coin if the profit reaches the set percentage and return the coin to the PAIRS log as applicable.
-DEFAULT_DCA_cancel_pending_trigger = 0.5
+DEFAULT_DCA_combined_cancel_pending_trigger = 0.01
 # If the price has dropped x% since we bought a coin and we have not sold it (and it's in the dca log),
 # create limit sell order for that pair at a price equivalent to your GAIN strategy sell_value.
-DEFAULT_DCA_pending_order_price_drop_trigger = 0
+DEFAULT_DCA_pending_order_price_drop_trigger = -5
 # Choose to combine pending orders for the same coin into one item in the pending log or keep them as separate items.
 DEFAULT_DCA_combine_pending_orders = true
 #
@@ -252,13 +288,13 @@ DEFAULT_DCA_combine_pending_orders = true
 # Set the value that will trigger a stop loss order. If the value of a coin drops below the set percentage it will be automatically sold for a loss.
 DEFAULT_DCA_stop_loss_trigger = 0
 # Set the amount of minutes that the bot is not allowed to buy a coin after it was sold by stop loss trigger.
-DEFAULT_DCA_stop_loss_timeout = 1440
-# Set trailing stop loss to lock in profits
-DEFAULT_DCA_trailing_stop_loss_trigger_arm = 3
-# This trigger seems to work for most coins but may need to be adjusted for your exchange
-DEFAULT_DCA_trailing_stop_loss_trigger = -1
+DEFAULT_DCA_stop_loss_timeout = 60
 # If set to true, Stoploss in DCA will behave the same as in pairs. once the set percentage is reached, the coin will sell as a stoploss.
 # If set to false, stoploss will not occur until DCA is complete.
-DCA_stop_before_complete = true
+DCA_stop_before_complete = false
 # Set to true to sell all of your coins in the DCA Log IMMEDIATELY for current market prices.
 DEFAULT_DCA_panic_sell_enabled = false
+default_dca_b_buy_strategy = RSI
+default_dca_b_buy_value = 35
+default_dca_c_sell_strategy = RSI
+default_dca_c_sell_value = 70

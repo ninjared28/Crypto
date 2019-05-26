@@ -23,7 +23,7 @@ EMA_slow_length = 13
 # Define the period (in seconds) used to calculate the RSI lines.
 RSI_candle_period = 300
 # Define the RSI time frame (in candles) used by all RSI calculations
-RSI_length = 2
+RSI_length = 14
 # Define the period (in seconds) used to calculate the STOCH.
 STOCH_candle_period = 300
 # Define the Stochastics RSI time frame (in candles) used by all STOCHRSI calculations

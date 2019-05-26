@@ -4,21 +4,21 @@
 # Define the market we are trading (BTC, ETH, XMR, BNB or USDT)
 market = USDC
 # This will enable trading for any pairs that you have defined
-enabled_pairs = ALL
+enabled_pairs = BTC, ETH
 # Enable trading (buying,selling and orders) using defined strategies for all pairs
 DEFAULT_trading_enabled = false
 # This will hide any pairs that you have disabled
-hidden_pairs = BNB
+hidden_pairs = BNB,TRX
 # DCA is a method for averaging down the price of a losing trade, hoping the price will come up to your lower average buy price.
 DEFAULT_DCA_enabled = -1
 # Choose to combine pending orders for the same coin into one item in the pending log or keep them as separate items.
 DEFAULT_combine_pending_orders = true
 # Define your starting balance from the exchange
-start_balance = 1000
+start_balance = 5000
 # Only buy coins if the buy cost will not let your balance go below specified amount
 keep_balance = 0
 # Only buy coins if the buy cost will not let your balance go below specified amount in %
-keep_balance_percentage = 50
+keep_balance_percentage = 0
 # Set to ignore low satoshi coins.
 #
 # POSSIBLE BUY LOG FILTERING
@@ -30,16 +30,16 @@ DEFAULT_sell_wall_orderbook_depth = 100
 # If this difference is exceeded then the coin will not be bought.
 DEFAULT_sell_wall_diff_percentage = 5000
 # Adjust trading pairs based on server capability and trading budget
-max_trading_pairs = 1
+max_trading_pairs = 2
 # Set the amount of the market currency (BTC, ETH, XMR, BNB, or USDT) we will use to buy a pair. This amount is spent for EACH initial purchase.
 DEFAULT_initial_cost = 0
 # An alternative to the fixed initial cost above, set the percentage of your TCV (Total Current Value) to be used for each initial purchase.
 DEFAULT_initial_cost_percentage = 5
 # Only buy coins with a minimum volume of specified amount.
 DEFAULT_min_buy_volume = 300
-DEFAULT_min_buy_price = 0.000000600
+DEFAULT_min_buy_price = 100
 # Max spread % between lowest ask and highest bid to allow a new buy order.
-DEFAULT_max_buy_spread = 3
+DEFAULT_max_buy_spread = 10
 # Allow initial buys if there is enough volume in order book to fill the order.
 DEFAULT_min_orderbook_volume_percentage = 100
 # Set the amount of minutes that the bot is not allowed to buy a coin after it was sold.
@@ -49,7 +49,7 @@ DEFAULT_buy_min_change_percentage = -5
 # Only purchase a pair if the 24 hour percentage change is below the max price increase.
 DEFAULT_buy_max_change_percentage = 30
 # coin_min_age is defined in days, it is used to allow the bot to trade only with coins which are older than x days,
-pair_min_listed_days = 120
+pair_min_listed_days = 10
 #
 #
 # BUY SETTINGS
@@ -65,27 +65,18 @@ pair_min_listed_days = 120
 #
 # Do we have a Bear Cross?
 #
-DEFAULT_A_buy_strategy = EMACROSS
-DEFAULT_A_buy_value = -0.01
-DEFAULT_A_buy_value_limit = -20
+DEFAULT_A_buy_strategy = RSI
+DEFAULT_A_buy_value = 40
+DEFAULT_A_buy_value_limit = 0
 #
 # Do we have a dip in price we can take advantage of?
 #
-DEFAULT_B_buy_strategy = EMAGAIN
-DEFAULT_B_buy_value = -0.01
-DEFAULT_B_buy_value_limit = -10
 #
 # Are we at the bottom of the trade cycle?
 #
-DEFAULT_C_buy_strategy = LOWBB
-DEFAULT_C_buy_value = 30
-DEFAULT_C_buy_value_limit = -90
 #
 # Are we oversold right now?
 #
-DEFAULT_D_buy_strategy = STOCH
-DEFAULT_D_buy_value = 30
-DEFAULT_D_buy_value_limit = -30
 #
 # Trailing should take us the rest of the way to the bottom of the Trade Cycle
 #
@@ -104,11 +95,11 @@ DEFAULT_trailing_buy = 0.01
 # What is the minimum profit we want to make on this trade?
 #
 DEFAULT_A_sell_strategy = GAIN
-DEFAULT_A_sell_value = 1.25
+DEFAULT_A_sell_value = 0.7
 #
 # Trailing should take us to the peak of the trade cycle
 #
-DEFAULT_trailing_profit = 0.01
+DEFAULT_trailing_profit = 0.4
 # Set the number of times you want to see the price fluctuate into and out of a good trail before making the buy.
 DEFAULT_trailing_profit_rebound_count = 0
 # If set to true, it will look at the highest bid order with enough volume rather than just the highest bid order.
@@ -178,6 +169,7 @@ BNB_reserve_amount = 0
 # Pairs delisted from the exchanges
 #
 8BIT_trading_enabled = false
+TRX_trading_enabled = false
 ADC_trading_enabled = false
 AM_trading_enabled = false
 AMS_trading_enabled = false
@@ -319,20 +311,19 @@ BCHSV_trading_enabled = false
 #
 NEO_trading_enabled = false
 NEO_DCA_enabled = false
-ETH_trading_enabled = false
-ETH_DCA_enabled = false
+ETH_trading_enabled = true
+ETH_DCA_enabled = true
 LTC_trading_enabled = false
 LTC_DCA_enabled = false
 ADA_trading_enabled = false
 ATOM_trading_enabled = false
 BAT_trading_enabled = false
-BTC_trading_enabled = false
+BTC_trading_enabled = true
 BTT_trading_enabled = false
 EOS_trading_enabled = false
 ETC_trading_enabled = false
 LINK_trading_enabled = false
 PAX_trading_enabled = false
-TRX_trading_enabled = false
 TUSD_trading_enabled = false
 USDS_trading_enabled = false
 USDT_trading_enabled = false
@@ -341,4 +332,10 @@ XLM_trading_enabled = false
 XRP_trading_enabled = false
 ZEC_trading_enabled = false
 default_b_sell_strategy = RSI
-default_b_sell_value = 85
+default_b_sell_value = 70
+default_trailing_profit_type = DEFAULT
+default_b_buy_strategy = LOWBB
+default_b_buy_value = 3
+default_b_buy_value_limit = -50
+default_c_sell_strategy = HIGHBB
+default_c_sell_value = 0
